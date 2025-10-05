@@ -1,0 +1,136 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Message {
+  chat_id: ID!
+  message_id: ID!
+  read_status: Boolean
+  sender_id: ID!
+  sent_at: AWSDateTime!
+  text: String!
+}
+
+type MessageConnection {
+  items: [Message]
+  nextToken: String
+}
+
+type Mutation {
+  createMessage(input: CreateMessageInput!): Message
+  deleteMessage(input: DeleteMessageInput!): Message
+  updateMessage(input: UpdateMessageInput!): Message
+}
+
+type Query {
+  getMessage(chat_id: ID!, sent_at: AWSDateTime!): Message
+  listMessages(filter: TableMessageFilterInput, limit: Int, nextToken: String): MessageConnection
+}
+
+type Subscription {
+  onCreateMessage(chat_id: ID, chat_ids: [ID], message_id: ID, sender_id: ID, sent_at: AWSDateTime): Message @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["createMessage"])
+  onDeleteMessage(chat_id: ID, message_id: ID, sender_id: ID, sent_at: AWSDateTime, text: String): Message @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["deleteMessage"])
+  onUpdateMessage(chat_id: ID, chat_ids: [ID], message_id: ID, sender_id: ID, sent_at: AWSDateTime): Message @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["updateMessage"])
+}
+
+input CreateMessageInput {
+  chat_id: ID!
+  message_id: ID!
+  read_status: Boolean
+  sender_id: ID!
+  sent_at: AWSDateTime!
+  text: String!
+}
+
+input DeleteMessageInput {
+  chat_id: ID!
+  sent_at: AWSDateTime!
+}
+
+input ModelSizeInput {
+  between: [Int]
+  eq: Int
+  ge: Int
+  gt: Int
+  le: Int
+  lt: Int
+  ne: Int
+}
+
+input TableBooleanFilterInput {
+  attributeExists: Boolean
+  eq: Boolean
+  ne: Boolean
+}
+
+input TableFloatFilterInput {
+  attributeExists: Boolean
+  between: [Float]
+  eq: Float
+  ge: Float
+  gt: Float
+  le: Float
+  lt: Float
+  ne: Float
+}
+
+input TableIDFilterInput {
+  attributeExists: Boolean
+  beginsWith: ID
+  between: [ID]
+  contains: ID
+  eq: ID
+  ge: ID
+  gt: ID
+  le: ID
+  lt: ID
+  ne: ID
+  notContains: ID
+  size: ModelSizeInput
+}
+
+input TableIntFilterInput {
+  attributeExists: Boolean
+  between: [Int]
+  eq: Int
+  ge: Int
+  gt: Int
+  le: Int
+  lt: Int
+  ne: Int
+}
+
+input TableMessageFilterInput {
+  chat_id: TableIDFilterInput
+  message_id: TableIDFilterInput
+  read_status: TableBooleanFilterInput
+  sender_id: TableIDFilterInput
+  sent_at: TableStringFilterInput
+  text: TableStringFilterInput
+}
+
+input TableStringFilterInput {
+  attributeExists: Boolean
+  beginsWith: String
+  between: [String]
+  contains: String
+  eq: String
+  ge: String
+  gt: String
+  le: String
+  lt: String
+  ne: String
+  notContains: String
+  size: ModelSizeInput
+}
+
+input UpdateMessageInput {
+  chat_id: ID!
+  message_id: ID
+  read_status: Boolean
+  sender_id: ID
+  sent_at: AWSDateTime!
+  text: String
+}

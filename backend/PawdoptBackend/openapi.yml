@@ -1,0 +1,971 @@
+openapi: 3.0.4
+info:
+  title: Pawdopt api
+  version: 1.0.0
+
+paths:
+  /dog:
+    post:
+      summary: Create a dog
+      operationId: createDog
+      tags:
+        - Dogs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DogCreate'
+      responses:
+        201:
+          description: New dog successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dog'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    get:
+      summary: List all dogs
+      operationId: listDogs
+      tags:
+        - Dogs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page
+          in: query
+          description: Page number to retrieve (starts from 1)
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      responses:
+        200:
+          description: An paged array of dog summaries
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: '#/components/schemas/DogPage'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /dog/{dogId}:
+    get:
+      summary: Get a dog profile by id
+      operationId: getDog
+      tags:
+        - Dogs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: dogId
+          required: true
+          schema:
+            type: string
+          description: ID of the dog to retrieve
+      responses:
+        200:
+          description: Retrieve one full dog profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dog'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        404: 
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Update dog profile
+      operationId: updateDog
+      tags:
+        - Dogs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: dogId
+          required: true
+          schema:
+            type: string
+          description: ID of the dog to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DogPartialUpdate'
+      responses:
+        200:
+          description: Successfully updated dog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dog'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete a dog
+      operationId: deleteDog
+      tags:
+        - Dogs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: dogId
+          required: true
+          schema:
+            type: string
+          description: ID of the dog to delete
+      responses:
+        204:
+          description: Null Response
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /swipe:
+    post:
+      summary: Adopter swiped
+      operationId: createSwipe
+      tags:
+        - Swipes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwipeCreate'
+      responses:
+        201:
+          description: New swipe successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Swipe'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chat:
+    # Create chat will be done in backend after swiping right, no need to send extra data
+    # Request will be made once chat is created
+
+    get:
+      summary: List all latest conversation messages
+      operationId: listChats
+      tags:
+        - Chats
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Array of latest conversation messages
+          content:
+            application/json:    
+              schema:
+                $ref: '#/components/schemas/ContactsPage'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chat/{chatId}:
+    post:
+      summary: Create a message
+      operationId: createMessage
+      tags:
+        - Chats
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema: 
+            type: string
+          description: chatId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+      responses:
+        201:
+          description: New message successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    get:
+      summary: Get chat history of chatId
+      operationId: listMessages
+      tags:
+        - Chats
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema: 
+            type: string
+          description: chatId
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            format: int32
+          description: Amount of messages loaded after each scroll
+        - in: query
+          name: beforeMessageId
+          required: false
+          schema:
+            type: integer
+            format: int32
+          description: Load limit amount of messges before the message id
+      responses:
+        200:
+          description: An paged array of messages
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: '#/components/schemas/MessagePage'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chat/{chatId}/request/{requestId}:
+    patch:
+      summary: Approve/Reject a chat request
+      operationId: updateStatus
+      tags:
+        - Chats
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema:
+            type: string
+          description: ID of the chat
+        - in: path
+          name: requestId
+          required: true
+          schema: 
+            type: string
+          description: ID of the request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestPartialUpdate'
+      responses:
+        200:
+          description: Successfully added chat or null object for rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /chat/{chatId}/message/{messageId}:
+    patch:
+      summary: Edit a message
+      operationId: updateMessages
+      tags:
+        - Chats
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema:
+            type: string
+          description: ID of the chat
+        - in: path
+          name: messageId
+          required: true
+          schema:
+            type: string
+          description: ID of the message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagePartialUpdate'
+      responses:
+        200:
+          description: Successfully edited message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete a message
+      operationId: deleteMessages
+      tags:
+        - Chats
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema:
+            type: string
+          description: ID of the chat where the message belongs
+        - in: path
+          name: messageId
+          required: true
+          schema:
+            type: string
+          description: ID of the message 
+      responses:
+        204:
+          description: Null Response
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/icon:
+    # Other user updates are done on Cognito
+    post:
+      summary: Returns URL for uploading icon image
+      operationId: newIcon
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: Return upload URL and image URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IconCreate'
+        401:
+          $ref: '#/components/responses/UnauthorisedError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+
+components:
+  responses:
+    BadRequestError:
+      description: 400 Invalid input provided
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: 500 Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    UnauthorisedError:
+      description: 401 Unauthorised user error
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/Error'
+
+    ForbiddenError:
+      description: 403 Forbidden access error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFoundError:
+      description: 404 Not Found Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    ConflictError:
+      description: 409 Conflict Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  
+  schemas:
+    Dog:
+      type: object
+      description: Detailed dog profile
+      required:
+        - id
+        - name
+        - age
+        - dob
+        - breed
+        - gender
+        - color
+        - size
+        - photoKeys
+        - description
+        - shelter
+        - status
+      properties:
+        id: 
+          type: string
+        name: 
+          type: string
+        age: 
+          type: integer
+        dob: 
+          type: string
+        breed:
+          type: string
+        gender: 
+          type: string
+        color:
+          type: string
+        size:
+          type: string
+        photoKeys: 
+          type: array 
+          items:
+            type: string
+        description:
+          type: string
+        shelter:
+          type: object
+          properties:
+            shelterId:
+              type: string
+            shelterName:
+              type: string
+            shelterAddress:
+              type: string
+            distance:
+              type: integer
+            shelterEmail: 
+              type: string
+            shelterContact:
+              type: string
+        createdAt: 
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - available
+            - pending
+            - adopted
+
+    DogCreate:
+      description: Create a dog
+      type: object
+      required:
+        - name
+        - age
+        - dob
+        - breed
+        - gender
+        - color
+        - size
+        - photoKeys
+        - description
+      properties:
+        name: 
+          type: string
+        age: 
+          type: integer
+        dob: 
+          type: string
+        breed:
+          type: string
+        gender: 
+          type: string
+        color:
+          type: string
+        size:
+          type: string
+        photoKeys: 
+          type: array 
+          items:
+            type: string
+        description:
+          type: string
+        # ShelterId should be included in the token
+        # CreatedAt should be auto-generated 
+
+    DogSummary:
+      type: object
+      description: Used in a list view of all dogs
+      required:
+        - id
+        - name
+        - age
+        - photoKeys
+        - shelterName
+        - distance
+      properties:
+        id: 
+          type: string
+        name:  
+          type: string
+        age:
+          type: integer
+        photoKeys: 
+          type: array
+          items:
+            type: string
+        shelter:
+          type: object
+          properties:
+            shelterId:
+              type: string
+            shelterName:
+              type: string
+            distance:
+              type: integer
+        status:
+          type: string
+          enum:
+            - available
+            - pending
+            - adopted
+
+    DogPage:
+      type: object
+      description: Array of dog summaries
+      properties:
+        dogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DogSummary'
+        total:
+          type: integer
+          description: Total number of dogs
+        page:
+          type: integer
+          description: Current page number
+        perPage:
+          type: integer
+          description: Dogs per page
+
+    DogPartialUpdate:
+      type: object
+      description: Fields that can be updated in part
+      properties:
+        name: 
+          type: string
+        age: 
+          type: integer
+        breed: 
+          type: string
+        gender: 
+          type: string
+        color:
+          type: string
+        size:
+          type: string
+        photoKeys: 
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+
+      # No required fields – all are optional
+
+    # Delete a dog profile uses Dog schema
+
+    SwipeCreate:
+      type: object
+      description: Details of each Swipe
+      required:
+        - dogId
+        - direction
+      properties:
+        dogId: 
+          type: string
+        direction:
+          type: string
+          enum: 
+            - 'Left'
+            - 'Right'
+
+    Swipe:
+      type: object
+      description: Details of each Swipe
+      required:
+        - id
+        - adopterId
+        - dogId
+        - direction
+        - shelterId
+        - swipedAt
+      properties:
+        id: 
+          type: string
+        adopterId: 
+          type: string
+        dogId: 
+          type: string
+        direction:
+          type: string
+          enum: 
+            - 'Left'
+            - 'Right'
+        shelterId:
+          type: string
+        swipedAt: 
+          type: string
+          format: date-time
+
+    SwipesAll:
+      type: object
+      description: All swipes by the user
+      properties:
+        swipes:
+          type: array
+          items:
+              $ref: '#/components/schemas/Swipe'
+
+    Contacts:
+      description: List view of one contact on contact page
+      type: object
+      properties:
+        chatId:
+          description: chatId
+          type: string
+        requestId:
+          description: requestId
+          type: string
+        status:
+          type: string
+          enum: 
+            - 'Requested'
+            - 'Approved'
+            - 'Rejected'
+        time:
+          description: Last message sent time or request create time
+          type: string
+        content:
+          description: Content of last message
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        userIcon:
+          type: string
+        unreadCount:
+          type: integer
+
+    ContactsPage:
+      description: Array of contacts shown on contact page
+      type: object
+      properties:
+        chats:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contacts'
+        total:
+          type: integer
+          description: Total number of contacts
+        page:
+          type: integer
+          description: Current page number
+        perPage:
+          type: integer
+          description: Contacts per page
+
+    Message:
+      type: object
+      description: Details of each message
+      required:
+        - id
+        - senderId
+        - receiverId
+        - chatId
+        - content
+        - sentAt
+        - read
+      properties:
+        id: 
+          type: string
+        chatId:
+          type: string
+        senderId: 
+          type: string
+        receiverId: 
+          type: string
+        content: 
+          type: string
+        sentAt: 
+          type: string
+          format: date-time
+        read:
+          type: boolean
+
+    MessageCreate:
+      description: Create new message
+      type: object
+      required:
+        - content
+      properties:
+        content: 
+          type: string
+
+    MessagePage:
+      type: object
+      description: Array of all messages
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+        requests:
+          type: array
+          description: Array of dog requests associated with the chat
+          items:
+            $ref: '#/components/schemas/Request'
+        unreadCount:
+          type: integer
+          description: Total number of unread messages
+        total:
+          type: integer
+          description: Total number of users
+        page:
+          type: integer
+          description: Current page number
+        perPage:
+          type: integer
+          description: Users per page  
+
+    MessagePartialUpdate:
+      type: object
+      description: Edit message
+      properties:
+        content: 
+          type: string
+
+    RequestPartialUpdate:
+      description: Decision on a request
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - 'Approved'
+            - 'Rejected'
+    
+    Request:
+      description: A dog request
+      type: object
+      required:
+        - dogId
+        - status
+      properties:
+        dogId:
+          type: string
+        status:
+          type: string
+          enum:
+            - 'Pending'
+            - 'Approved'
+            - 'Reject'
+        createdAt:
+          type: string
+          format: date-time
+        respondedAt:
+          type: string
+          format: date-time
+
+    IconCreate:
+      description: Upload URL and image URL
+      type: object
+      required:
+        - uploadUrl
+        - imageUrl
+      properties:
+        uploadUrl:
+          type: string
+        imageUrl:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: Error code representing type of error
+        message:
+          type: string
+          description: A human-readable error message
+        details: 
+          type: string
+          description: Optional detailed error description (useful for debugging)
+    
+
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
