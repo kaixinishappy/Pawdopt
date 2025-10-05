@@ -1,3 +1,6 @@
 [submodule "backend/PawdoptBackend"]
 	path = backend/PawdoptBackend
 	url = https://github.com/glyx2006/PawdoptBackend.git
+[submodule "PawdoptBackend"]
+	path = PawdoptBackend
+	url = https://github.com/glyx2006/PawdoptBackend.git
