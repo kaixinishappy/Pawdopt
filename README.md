@@ -2,14 +2,23 @@
 Pawdopt is a mobile application that connects animal shelters with potential adopters through a simple and engaging swipe interface. It streamlines the adoption process by allowing users to discover pets, chat with shelters, and submit adoption applications — all in one place.
 
 ## Main Features
-- 🐶 Browse adoptable dogs with swipe interface  
-- 💬 Chat with shelters directly  
-- 📝 Unified adoption application system
+
+1. **Swipe Interface:** Adopters can swipe through dog profiles to find their perfect match.
+
+2. **Shelter Dashboard:** Shelters can upload, edit, and manage dog listings effortlessly.
+
+3. **Chat System:** Enables real-time communication between adopters and shelters.
+
+4. **Unified Adoption Process:** Simplifies the application process through an integrated form and status tracking.
+
+5. **Secure Authentication:** AWS Cognito provides safe and reliable user login for both adopters and shelters.
+
+6. **Cloud Storage:** Dog images are securely stored and retrieved from Amazon S3.
 
 ## Setup Instructions
 1. Clone the repository
 ```
-git clone https://github.com/glyx2006/Pawdopt.git
+git clone https://github.com/kaixinishappy/Pawdopt.git
 ```
 
 2. Install dependencies
