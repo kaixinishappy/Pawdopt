@@ -9,7 +9,7 @@ Pawdopt is a mobile application that connects animal shelters with potential ado
 ## Setup Instructions
 1. Clone the repository
 ```
-git clone https://github.com/glyx2006/Pawdopt.git
+git clone https://github.com/kaixinishappy/Pawdopt.git
 ```
 
 2. Install dependencies
