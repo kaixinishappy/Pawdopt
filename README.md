@@ -15,6 +15,7 @@ Pawdopt is a mobile application that connects animal shelters with potential ado
 
 6. **Cloud Storage:** Dog images are securely stored and retrieved from Amazon S3.
 
+You can check out how the features work in our demo video [here](https://drive.google.com/drive/folders/1xlEwgTDR_b42hHrOHW8pKtKT2L_6xhI_).
 ## Setup Instructions
 1. Clone the repository
 ```
